@@ -2,15 +2,17 @@ import { defineStore } from "pinia";
 import {ref,computed} from 'vue'
 export const useTodoStore = defineStore('todos',() => {
     const newTodo = ref('')
-    const todos = ref([
-        { id: "1", text: 'Learn Vue.js', completed: false },
-        { id: "2", text: 'Build a Todo App', completed: false },
-        { id: "3", text: 'Deploy the App', completed: false },
-        { id: "4", text: 'Test the App', completed: false },
-        { id: "5", text: 'Refactor the Code', completed: false },
-        { id: "6", text: 'Write Documentation', completed: false }
-    ])
-    localStorage.setItem('todos', JSON.stringify(todos.value));
+    const todoStorage = localStorage.getItem('todos');
+    // Initialize todos from localStorage or with default values
+    // const todos = ref([
+    //     { id: "1", text: 'Learn Vue.js', completed: false },
+    //     { id: "2", text: 'Build a Todo App', completed: false },
+    //     { id: "3", text: 'Deploy the App', completed: false },
+    //     { id: "4", text: 'Test the App', completed: false },
+    //     { id: "5", text: 'Refactor the Code', completed: false },
+    //     { id: "6", text: 'Write Documentation', completed: false }
+    // ])
+    const todos = ref(todoStorage ? JSON.parse(todoStorage) : []);
     const filters = ref([
         { text: 'All', value: 'all' },
         { text: 'Active', value: 'active' },
@@ -34,10 +36,12 @@ export const useTodoStore = defineStore('todos',() => {
         console.log('Todo list:', todos.value);
         // Clear the input field after adding the todo
         newTodo.value = '';
+        localStorage.setItem('todos', JSON.stringify(todos.value));
         }
     }
     const deleteTodo = (id) => {
         todos.value = todos.value.filter(todo => todo.id !== id);
+        localStorage.setItem('todos', JSON.stringify(todos.value));
     }
     const getTodoById = (id) => {
         return todos.value.find(todo => todo.id === id);
@@ -46,6 +50,14 @@ export const useTodoStore = defineStore('todos',() => {
         const todo = todos.value.find(todo => todo.id === id);
         if (todo) {
             todo.completed = !todo.completed;
+        }
+        localStorage.setItem('todos', JSON.stringify(todos.value));
+    }
+    const updateTodo = (id, updatedText) => {
+        const todo = todos.value.find(todo => todo.id === id);
+        if (todo) {
+            todo.text = updatedText;
+            localStorage.setItem('todos', JSON.stringify(todos.value));
         }
     }
     return {
@@ -58,6 +70,7 @@ export const useTodoStore = defineStore('todos',() => {
         deleteTodo,
         showNoTasksMessage,
         getTodoById,
-        toggleTodoCompletion
+        toggleTodoCompletion,
+        updateTodo
     }
 })

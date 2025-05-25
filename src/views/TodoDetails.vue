@@ -11,7 +11,8 @@ console.log('Todo:', todo);
 </script>
 <template>
   <div v-if="todo">
-    <h1>{{ todo.text }}</h1>
+    <h1>Todo Details</h1>
+    <h1><input v-model="todo.text" @keyup.enter="todoStore.updateTodo(todo.id,todo.text)"/></h1>
     <p>Status: {{ todo.completed ? 'Completed' : 'Pending' }}</p>
     <button @click="todoStore.toggleTodoCompletion(todoId)">
       {{ todo.completed ? 'Mark as Pending' : 'Mark as Completed' }}
